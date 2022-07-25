@@ -25,4 +25,25 @@ class Link extends Model
     {
         return $this->hasMany(LinkCurto::class);
     }
+
+    public function links($search)
+    {
+        return Link::search($search)
+            ->where('status', 'Ativo')
+            ->latest()
+            ->paginate(15);
+    }
+
+    public function salvar($request)
+    {
+        $validated = $request->validated();
+
+        $validated['created_at'] = now();
+        Link::insert($validated);
+    }
+
+    public function apagar(Link $link)
+    {
+        $link->delete();
+    }
 }

@@ -6,68 +6,61 @@ use App\Http\Requests\LinkCurtoStoreRequest;
 use App\Models\Link;
 use App\Models\LinkCurto;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class LinkCurtoController extends Controller
 {
     protected $linksCurtos;
 
-    public function __construct(LinkCurto $linksCurtos) {
+    public function __construct(LinkCurto $linksCurtos)
+    {
         $this->linksCurtos = $linksCurtos;
     }
 
     public function index(Request $request)
     {
-       return $this->linksCurtos->linksCurtos($request['links_id']);
-    }
-
-    public static function validacaoLinkCurto($codigos)
-    {
-        return LinkCurto::select('links.link')
-            ->join('links', 'links.id', '=', 'links_curtos.link_id')
-            ->whereIn('links_curtos.codigo', $codigos)
-            ->where('links_curtos.status', 'Ativo')
-            ->where('links.status', 'Ativo')
-            ->where('links_curtos.data_expiracao', '>=', now())
-            ->first();
+        try {
+            $linksCurtos = $this->linksCurtos->linksCurtos($request['link_id']);
+            return response()->json(['success' => true, 'linksCurtos' => $linksCurtos]);
+        } catch (\Exception $exception) {
+            throw ValidationException::withMessages(['success' => false, 'message' => $exception->getMessage()]);
+        }
     }
 
     public function store(LinkCurtoStoreRequest $request)
     {
-        $validated = $request->validated();
+        try {
+            $validacao = $this->linksCurtos->salvar($request);
 
-        $codigos = LinkCurto::where('link_id', $request['link_id'])->pluck('codigo');
-        $validacao = self::validacaoLinkCurto($codigos);
-
-        if ($validacao) {
-            return false;
+            return response()->json(['success' => $validacao]);
+        } catch (\Exception $exception) {
+            throw ValidationException::withMessages(['success' => false, 'message' => $exception->getMessage()]);
         }
-
-        //Código de 8 caracteres embaralhados
-        do {
-            $validated['codigo'] = substr(md5(uniqid(rand(), true)), 0, 8);
-        } while (in_array($validated['codigo'], (array)LinkCurto::pluck('codigo')));
-
-        $validated['created_at'] = now();
-        $validated['data_expiracao'] = date('Y-m-d H:m:s', strtotime($validated['created_at'] . '+7days'));
-        LinkCurto::insert($validated);
-
-        return true;
     }
 
     public function destroy(Request $request)
     {
-        LinkCurto::where('id', $request['link_curto_id'])->update(['status' => 'Inativo', 'updated_at' => now()]);
+        try {
+            $this->linksCurtos->apagar($request);
+            return response()->json(['success' => true]);
+        } catch (\Exception $exception) {
+            throw ValidationException::withMessages(['success' => false, 'message' => $exception->getMessage()]);
+        }
     }
 
     public function redirecionamento($codigo)
     {
-        $linkCurto = self::validacaoLinkCurto((array)$codigo);
+        try {
+            $linkCurto = $this->linksCurtos->validacaoLinkCurto((array)$codigo);
 
-        if (!$linkCurto) {
-            return redirect()
-                ->route('links.index')
-                ->withErrors(__('crud.common.no_role'));
+            if (!$linkCurto) {
+                return redirect()
+                    ->route('links.index')
+                    ->withError(__('crud.common.no_role'));
+            }
+            return redirect($linkCurto->link);
+        } catch (\Exception $exception) {
+            throw ValidationException::withMessages(['success' => false, 'message' => $exception->getMessage()]);
         }
-        return redirect($linkCurto->link);
     }
 }

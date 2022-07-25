@@ -6,40 +6,52 @@ use App\Http\Requests\LinkStoreRequest;
 use App\Models\Link;
 use App\Models\LinkCurto;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class LinkController extends Controller
 {
+    protected $links;
+
+    public function __construct(Link $links)
+    {
+        $this->links = $links;
+    }
+
     public function index(Request $request)
     {
-        $search = $request->get('search', '');
+        try {
+            $search = $request->get('search', '');
+            $links = $this->links->links($search);
 
-        $links = Link::search($search)
-            ->where('status', 'Ativo')
-            ->latest()
-            ->paginate(15);
-
-        return view('index', compact('links', 'search'));
+            return view('index', compact('links', 'search'));
+        } catch (\Exception $exception) {
+            throw ValidationException::withMessages(['success' => false, 'message' => $exception->getMessage()]);
+        }
     }
 
     public function store(LinkStoreRequest $request)
     {
-        $validated = $request->validated();
+        try {
+            $this->links->salvar($request);
 
-        $validated['created_at'] = now();
-        Link::insert($validated);
-
-        return redirect()
-            ->route('links.index')
-            ->withSuccess(__('crud.common.created'));
+            return redirect()
+                ->route('links.index')
+                ->withSuccess(__('crud.common.created'));
+        } catch (\Exception $exception) {
+            throw ValidationException::withMessages(['success' => false, 'message' => $exception->getMessage()]);
+        }
     }
 
-    public function destroy(Request $request, Link $link)
+    public function destroy(Link $link)
     {
-        $link->update(['status' => 'Inativo', 'updated_at' => now()]);
-        LinkCurto::where('link_id', $link->id)->update(['status' => 'Inativo', 'updated_at' => now()]);
+        try {
+            $this->links->apagar($link);
 
-        return redirect()
-            ->route('links.index')
-            ->withSuccess(__('crud.common.removed'));
+            return redirect()
+                ->route('links.index')
+                ->withSuccess(__('crud.common.removed'));
+        } catch (\Exception $exception) {
+            throw ValidationException::withMessages(['success' => false, 'message' => $exception->getMessage()]);
+        }
     }
 }

@@ -16,7 +16,7 @@ class CreateTableLinksCurtos extends Migration
         if(!Schema::hasTable('links_curtos')) {
             Schema::create('links_curtos', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('link_id')->references('id')->on('links');
+                $table->foreignId('link_id')->references('id')->on('links')->onUpdate('cascade')->onDelete('cascade');;
                 $table->string('codigo');
                 $table->dateTime('data_expiracao');
                 $table->enum('status', ['Ativo', 'Inativo'])->default('Ativo');

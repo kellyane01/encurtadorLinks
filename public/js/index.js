@@ -16,7 +16,7 @@ function paginacaoLinksCurtos(link_id, pagina = 1) {
         success: function (resposta) {
             // console.log('Brenaa');
             let acao, link;
-            $.each(resposta.data, function (id, valor) {
+            $.each(resposta.linksCurtos.data, function (id, valor) {
                 if (valor.situacao == 'Ativo') {
                     link = `<td>${valor.link}` +
                         `<a class="ml-2 btn btn-sm btn-light" onclick="copiarLink('${valor.link}')"><i class="icon ion-md-copy"></i></a>` +
@@ -61,7 +61,7 @@ function gerarLinkCurto() {
         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         url: `/links-curtos?link_id=${link_id}`,
         success: function (retorno) {
-            if (retorno) {
+            if (retorno.success) {
                 paginacaoLinksCurtos(link_id);
                 alerts('success', 'Link gerado!');
             } else {
