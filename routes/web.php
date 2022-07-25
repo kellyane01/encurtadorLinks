@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LinkController;
+use App\Http\Controllers\LinkCurtoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,3 +20,5 @@ Route::get('/', function () {
 });
 
 Route::resource('links', LinkController::class);
+Route::get('/redirecionamento/{codigo}', [LinkCurtoController::class, 'redirecionamento']);
+Route::resource('links-curtos', LinkCurtoController::class);

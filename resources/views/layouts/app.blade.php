@@ -56,16 +56,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-maskmoney/3.0.2/jquery.maskMoney.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/plentz/jquery-maskmoney@master/dist/jquery.maskMoney.min.js"></script>
-    @livewireStyles
+{{--    @livewireStyles--}}
 </head>
 
-<body class="sidebar-mini layout-fixed layout-navbar-fixed ">
+<body class="sidebar-mini layout-fixed layout-navbar-fixed">
 <div id="app" class="wrapper">
-    <div class="main-header">
-        @include('layouts.nav')
-    </div>
+{{--    <div class="main-header">--}}
+{{--        @include('layouts.nav')--}}
+{{--    </div>--}}
 
-    <main class="content-wrapper py-5 px-2">
+    <main class="ml-0 content-wrapper py-5 px-2">
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -79,14 +79,14 @@
     </main>
 </div>
 
-@stack('modals')
+@yield('modals')
 
-@livewireScripts
+{{--@livewireScripts--}}
 
 <script src="https://cdn.jsdelivr.net/gh/livewire/turbolinks@v0.1.x/dist/livewire-turbolinks.js"
         data-turbolinks-eval="false" data-turbo-eval="false"></script>
 
-@stack('scripts')
+@yield('scripts')
 
 <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
 

@@ -6,23 +6,23 @@ use App\Models\Scopes\Searchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Link extends Model
+class LinkCurto extends Model
 {
     use HasFactory;
     use Searchable;
 
     protected $fillable = [
-        'nome',
-        'link',
-        'status',
+        'link_id',
+        'codigo',
+        'data_expiracao',
     ];
 
     protected $searchableFields = ['*'];
 
-    protected $table = 'links';
+    protected $table = 'links_curtos';
 
-    public function linksCurtos()
+    public function link()
     {
-        return $this->hasMany(LinkCurto::class);
+        return $this->belongsTo(Link::class);
     }
 }

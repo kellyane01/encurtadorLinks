@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LinkStoreRequest;
 use App\Models\Link;
 use Illuminate\Http\Request;
 
@@ -12,40 +13,33 @@ class LinkController extends Controller
         $search = $request->get('search', '');
 
         $links = Link::search($search)
+            ->where('status', 'Ativo')
             ->latest()
             ->paginate(15);
 
         return view('index', compact('links', 'search'));
     }
 
-    public function create(Request $request)
+    public function store(LinkStoreRequest $request)
     {
-    }
+        $validated = $request->validated();
 
-    public function store()
-    {
+        if (!filter_var($request['link'], FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
+            return redirect()->back()->withErrors('Link inválido');
+        }
+
+        $validated['created_at'] = now();
+        Link::insert($validated);
+
         return redirect()
             ->route('links.index')
             ->withSuccess(__('crud.common.created'));
     }
 
-    public function show(Request $request)
+    public function destroy(Request $request, Link $link)
     {
-    }
+        $link->update(['status' => 'Inativo', 'updated_at' => now()]);
 
-    public function edit(Request $request)
-    {
-    }
-
-    public function update()
-    {
-        return redirect()
-            ->route('links.index')
-            ->withSuccess(__('crud.common.saved'));
-    }
-
-    public function destroy(Request $request)
-    {
         return redirect()
             ->route('links.index')
             ->withSuccess(__('crud.common.removed'));
