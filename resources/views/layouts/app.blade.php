@@ -72,6 +72,13 @@
     </script>
 @endif
 
+@if (session()->has('error'))
+    <script>
+        const notyf = new Notyf({dismissible: true})
+        notyf.error('{{ session('error') }}')
+    </script>
+@endif
+
 @yield('scripts')
 </body>
 </html>
