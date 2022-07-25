@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LinkStoreRequest;
 use App\Models\Link;
+use App\Models\LinkCurto;
 use Illuminate\Http\Request;
 
 class LinkController extends Controller
@@ -24,10 +25,6 @@ class LinkController extends Controller
     {
         $validated = $request->validated();
 
-        if (!filter_var($request['link'], FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
-            return redirect()->back()->withErrors('Link inválido');
-        }
-
         $validated['created_at'] = now();
         Link::insert($validated);
 
@@ -39,6 +36,7 @@ class LinkController extends Controller
     public function destroy(Request $request, Link $link)
     {
         $link->update(['status' => 'Inativo', 'updated_at' => now()]);
+        LinkCurto::where('link_id', $link->id)->update(['status' => 'Inativo', 'updated_at' => now()]);
 
         return redirect()
             ->route('links.index')

@@ -34,7 +34,7 @@
 
         <div class="card">
             <div class="card-body">
-                <div style="display: flex; justify-content: space-between;">
+                <div class="d-flex justify-space-between">
                     <h4 class="card-title">@lang('crud.links.index_title')</h4>
                 </div>
 
@@ -60,24 +60,22 @@
                                 <td class="text-center">{{ count($link->linksCurtos) }}</td>
                                 <td class="text-center">
                                     <div class="dropdown">
-                                        <button class="btn btn-sm btn-light dropdown-toggle " type="button"
-                                                id="dropdownActions"
-                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button
+                                            class="btn btn-sm btn-light dropdown-toggle" id="dropdownActions"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                        >
                                             MENU
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownActions">
-                                            <a class="btn-sm dropdown-item" onclick="verLinksCurtos({{$link->id}})">Links
-                                                curtos</a>
+                                            <a class="btn-sm dropdown-item" onclick="verLinksCurtos({{$link->id}})">
+                                                Links curtos
+                                            </a>
                                             <form
-                                                action="{{ route('links.destroy', $link) }}"
-                                                method="POST"
+                                                action="{{ route('links.destroy', $link) }}" method="POST"
                                                 onsubmit="return confirm('{{ __('crud.common.are_you_sure') }}')"
                                             >
                                                 @csrf @method('DELETE')
-                                                <button
-                                                    type="submit"
-                                                    class="btn-sm dropdown-item"
-                                                >
+                                                <button type="submit" class="btn-sm dropdown-item">
                                                     Excluir
                                                 </button>
                                             </form>
@@ -116,38 +114,9 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form
-                        action="{{ route('links.store') }}"
-                        method="POST"
-                        enctype="multipart/form-data"
-                    >
-                        @csrf
-                        <x-inputs.group class="col-12 px-0">
-                            <x-inputs.text
-                                name="nome"
-                                label="Nome"
-                                value=""
-                                maxlength="255"
-                                placeholder="Digite o nome"
-                                required
-                            ></x-inputs.text>
-                        </x-inputs.group>
-
-                        <x-inputs.group class="col-12 px-0">
-                            <x-inputs.text
-                                name="link"
-                                label="Link"
-                                value=""
-                                maxlength="255"
-                                placeholder="Cole o link aqui"
-                                required
-                            ></x-inputs.text>
-                        </x-inputs.group>
-
-                        <button
-                            class="btn btn-primary btn-sm float-right"
-                            type="submit"
-                        >
+                    <form action="{{ route('links.store') }}" method="POST">
+                        @csrf @include('form-inputs')
+                        <button class="btn btn-primary btn-sm float-right" type="submit">
                             Pronto
                         </button>
                     </form>
@@ -166,22 +135,16 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <input type="hidden" id="link_id" name="link_id"/>
+
                     <div class="mb-2 text-right">
-{{--                        <form--}}
-{{--                            action="{{ route('links-curtos.store') }}"--}}
-{{--                            method="POST"--}}
-{{--                            onsubmit="return confirm('{{ __('crud.common.are_you_sure') }}')"--}}
-{{--                        >--}}
-{{--                            @csrf--}}
-                            <input type="hidden" id="link_id" name="link_id"/>
-                            <button
-                                onclick="gerarLinkCurto()"
-                                type="submit"
-                                class="btn-sm btn-primary"
-                            >
-                                @lang('crud.linksCurtos.create_title')
-                            </button>
-{{--                        </form>--}}
+                        <button
+                            onclick="gerarLinkCurto()"
+                            type="submit"
+                            class="btn-sm btn-primary"
+                        >
+                            @lang('crud.linksCurtos.create_title')
+                        </button>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-borderless table-hover">
@@ -202,10 +165,13 @@
                             </tr>
                             </thead>
                             <tbody id="tbody_links_curtos"></tbody>
-                            <tfoot>
-                            <tr id="paginacao_links_curtos"></tr>
-                            </tfoot>
                         </table>
+                        <div>
+                            <nav aria-label="...">
+                                <ul class="pagination justify-content-center" id="paginacao_links_curtos">
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -215,18 +181,22 @@
 
 @section('scripts')
     <script type="text/javascript">
-        function alertSuccess(msg) {
-            const notyf = new Notyf({dismissible: true})
-            notyf.success(msg)
+        function alerts(tipo, msg) {
+            const notyf = new Notyf({dismissible: true});
+            tipo == 'success' ? notyf.success(msg) : notyf.error(msg);
         }
 
-        function verLinksCurtos(link_id, pagina = 1) {
-            paginacaoLinksCurtos(link_id, pagina);
+        function abrirModalAddLink() {
+            $('#modalLink').modal({show: true});
+        }
+
+        function verLinksCurtos(link_id) {
+            paginacaoLinksCurtos(link_id);
             $('#link_id').val(link_id);
             $('#modalLinksCurtos').modal({show: true});
         }
 
-        function paginacaoLinksCurtos(link_id, pagina) {
+        function paginacaoLinksCurtos(link_id, pagina = 1) {
             $('#tbody_links_curtos').empty();
             $.ajax({
                 url: `/links-curtos?link_id=${link_id}&page=${pagina}`,
@@ -256,24 +226,13 @@
                         );
                     });
 
-                    let ultima_pag = $(`#pag-${resposta.last_page}`);
-                    console.log(pagina);
+                    let ultima_pag = $(`#pag-${resposta.last_page}`).text();
 
-                    if (pagina == 1 || !ultima_pag) {
+                    if ((pagina == 1 || !ultima_pag) && resposta.last_page > 1) {
                         $('#paginacao_links_curtos').empty();
-
-                        $('#paginacao_links_curtos').append(
-                            '<nav aria-label="...">' +
-                            '<ul class="pagination" id="link">'
-                        );
-                        for (let pag = 1; pag < resposta.last_page; pag++) {
-                            console.log('pag' + pag);
-                            $('#link').append(`<li class="page-item" id="pag-${pag}"><a onclick="paginacaoLinksCurtos(${link_id}, ${pag})" class="page-link">${pag}</a></li>`)
+                        for (let pag = 1; pag <= resposta.last_page; pag++) {
+                            $('#paginacao_links_curtos').append(`<li class="page-item" id="pag-${pag}"><a onclick="paginacaoLinksCurtos(${link_id}, ${pag})" class="page-link">${pag}</a></li>`)
                         }
-                        $('#paginacao_links_curtos').append(
-                            `</ul>` +
-                            `</nav>`
-                        );
                     }
 
                     $('.page-item').removeClass('active');
@@ -289,16 +248,19 @@
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 url: `/links-curtos?link_id=${link_id}`,
                 success: function (retorno) {
-                    console.log(retorno);
-                    paginacaoLinksCurtos(link_id);
-                    alertSuccess('Link gerado!');
+                    if (retorno) {
+                        paginacaoLinksCurtos(link_id);
+                        alerts('success', 'Link gerado!');
+                    } else {
+                        alerts('error', 'Erro ao gerar link!');
+                    }
                 }
             });
         }
 
         function copiarLink(link) {
             navigator.clipboard.writeText(link);
-            alertSuccess('Link copiado!');
+            alerts('success', 'Link copiado!');
         }
 
         function desativarLinkCurto(link_id, link_curto_id) {
@@ -308,7 +270,7 @@
                 url: `/links-curtos/${link_curto_id}?link_curto_id=${link_curto_id}`,
                 success: function () {
                     paginacaoLinksCurtos(link_id);
-                    alertSuccess('Link desativado!');
+                    alerts('success', 'Link desativado!');
                 }
             });
         }

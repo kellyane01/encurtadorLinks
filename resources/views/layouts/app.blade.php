@@ -20,24 +20,17 @@
             crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-    <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet"/>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback">
-    {{-- <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet"> --}}
 
     <!-- Styles -->
-    {{--         <link href="{{ asset('css/app.css') }}" rel="stylesheet">--}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
 
     <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/solid.min.css"
-          integrity="sha512-WTx8wN/JUnDrE4DodmdFBCsy3fTGbjs8aYW9VDbW8Irldl56eMj8qUvI3qoZZs9o3o8qFxfGcyQocUY0LYZqzQ=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
 
     <!-- Small Ionicons Fixes for AdminLTE -->
@@ -50,21 +43,10 @@
             width: 25px;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js"
-            integrity="sha512-G3jAqT2eM4MMkLMyQR5YBhvN5/Da3IG6kqgYqU9zlIH4+2a+GuMdLb5Kpxy6ItMdCfgaKlo2XFhI0dHtMJjoRw=="
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-maskmoney/3.0.2/jquery.maskMoney.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/plentz/jquery-maskmoney@master/dist/jquery.maskMoney.min.js"></script>
-{{--    @livewireStyles--}}
 </head>
 
 <body class="sidebar-mini layout-fixed layout-navbar-fixed">
 <div id="app" class="wrapper">
-{{--    <div class="main-header">--}}
-{{--        @include('layouts.nav')--}}
-{{--    </div>--}}
-
     <main class="ml-0 content-wrapper py-5 px-2">
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -81,13 +63,6 @@
 
 @yield('modals')
 
-{{--@livewireScripts--}}
-
-<script src="https://cdn.jsdelivr.net/gh/livewire/turbolinks@v0.1.x/dist/livewire-turbolinks.js"
-        data-turbolinks-eval="false" data-turbo-eval="false"></script>
-
-@yield('scripts')
-
 <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
 
 @if (session()->has('success'))
@@ -96,33 +71,6 @@
         notyf.success('{{ session('success') }}')
     </script>
 @endif
-
-<script>
-    /* Simple Alpine Image Viewer */
-    function imageViewer(src = '') {
-        return {
-            imageUrl: src,
-
-            refreshUrl() {
-                this.imageUrl = this.$el.getAttribute("image-url")
-            },
-
-            fileChosen(event) {
-                this.fileToDataUrl(event, src => this.imageUrl = src)
-            },
-
-            fileToDataUrl(event, callback) {
-                if (!event.target.files.length) return
-
-                let file = event.target.files[0],
-                    reader = new FileReader()
-
-                reader.readAsDataURL(file)
-                reader.onload = e => callback(e.target.result)
-            },
-        }
-    }
-</script>
 
 @yield('scripts')
 </body>

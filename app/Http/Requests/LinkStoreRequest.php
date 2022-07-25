@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -22,9 +23,9 @@ class LinkStoreRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        return ([
             'nome' => ['required', 'max:255', 'string'],
-            'link' => ['required', 'string', 'unique:links,link'],
-        ];
+            'link' => ['required', 'url', 'unique:links,link'],
+        ]);
     }
 }

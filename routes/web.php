@@ -20,5 +20,6 @@ Route::get('/', function () {
 });
 
 Route::resource('links', LinkController::class);
-Route::get('/redirecionamento/{codigo}', [LinkCurtoController::class, 'redirecionamento']);
+
+Route::get('/redirect/{codigo}', [LinkCurtoController::class, 'redirecionamento']);
 Route::resource('links-curtos', LinkCurtoController::class);
