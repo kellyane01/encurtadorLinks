@@ -9,19 +9,15 @@ use Illuminate\Http\Request;
 
 class LinkCurtoController extends Controller
 {
+    protected $linksCurtos;
+
+    public function __construct(LinkCurto $linksCurtos) {
+        $this->linksCurtos = $linksCurtos;
+    }
+
     public function index(Request $request)
     {
-        $linksCurtos = LinkCurto::where('link_id', $request['link_id'])
-            ->latest()
-            ->paginate(10);
-
-        foreach ($linksCurtos as $link) {
-            $link->link = env('APP_URL') . '/redirect/' . $link->codigo;
-            $link->data_expiracao_ = date('d/m/Y H:i', strtotime($link->data_expiracao));
-            $link->situacao = $link->status == 'Ativo' ? $link->data_expiracao >= now() ? 'Ativo' : 'Expirado' : $link->status;
-        }
-
-        return $linksCurtos;
+       return $this->linksCurtos->linksCurtos($request['links_id']);
     }
 
     public static function validacaoLinkCurto($codigos)

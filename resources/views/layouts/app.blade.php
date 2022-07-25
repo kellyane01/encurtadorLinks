@@ -48,15 +48,6 @@
 <body class="sidebar-mini layout-fixed layout-navbar-fixed">
 <div id="app" class="wrapper">
     <main class="ml-0 content-wrapper py-5 px-2">
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
         @yield('content')
     </main>
 </div>
@@ -79,6 +70,6 @@
     </script>
 @endif
 
-@yield('scripts')
+@stack('scripts')
 </body>
 </html>
